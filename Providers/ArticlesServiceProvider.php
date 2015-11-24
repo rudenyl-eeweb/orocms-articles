@@ -31,7 +31,7 @@ class ArticlesServiceProvider extends ServiceProvider
 	 * @return void
 	 */
 	public function register()
-	{		
+	{
 		//
 	}
 
@@ -93,24 +93,19 @@ class ArticlesServiceProvider extends ServiceProvider
 	public function registerComposers()
 	{
 		view()->composer('articles::admin.form', function($view) {
-		    $buffer = null;
+		    # 
+		    # onBeforeRenderItem
+		    #
 		    if ($view->offsetExists('model')) {
 		        $article = $view->offsetGet('model');
 
-		        if ($results = event('articles.admin.onBeforeRenderItem', $article)) {
-		            if (is_array($results)) {
-		                $article = $results[0];
-		            }
-		        }
-
-		        if ($results = event('articles.admin.onAfterRenderItem', $article)) {
-		            $buffer = implode("\n", $results);
-		        }
+		        event('articles.admin.onBeforeRenderItem', $article);
 		    }
 
-		    if ($buffer) {
-		        $view->getFactory()->startSection('header', $buffer);
-		    }
+		    # 
+		    # onAfterRenderItem
+		    #
+	        event('articles.admin.onAfterRenderItem', $view);
 		});
 	}
 

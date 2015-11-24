@@ -3,15 +3,13 @@
 
 @section('content')
     <div>
-        @include('articles::admin.form', 
-            [
-                'model' => $article, 
-                'header' => trans('articles::articles.admin.form.edit.header'),
-                'statuses' => [
-                    0 => 'Disabled',
-                    1 => 'Enabled'
-                ]
+        @include('articles::admin.form', [
+            'model' => $article, 
+            'header' => trans('articles::articles.admin.form.edit.header'),
+            'statuses' => [
+                0 => 'Disabled',
+                1 => 'Enabled'
             ]
-        )
+        ])
     </div>
 @stop

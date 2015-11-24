@@ -1,11 +1,15 @@
-@extends('articles::layouts.master')
+@extends('base_layout')
 
-@section('content')
-	
-	<h1>Hello World</h1>
-	
-	<p>
-		This view is loaded from module: {!! config('articles.name') !!}
-	</p>
+@if (isset($article))
+    @section('title'){{ $article->title }}@stop
 
-@stop
+    @section('content')
+        <h1>
+            {{ $article->title }}
+        </h1>
+
+        <div role="md">
+            {{ $article->description }}
+        </div>
+    @stop
+@endif

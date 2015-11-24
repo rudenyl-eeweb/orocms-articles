@@ -4,7 +4,8 @@
  */
 Route::group(['namespace' => 'Modules\Articles\Http\Controllers'], function() {
     Route::group(['prefix' => 'articles'], function() {
-        Route::get('/', 'ArticlesController@index');
+        Route::get('/', ['as' => 'articles.index', 'uses' => 'ArticlesController@index']);
+        Route::get('/{slug}', ['as' => 'articles.show', 'uses' => 'ArticlesController@show']);
     });
 
     /**
