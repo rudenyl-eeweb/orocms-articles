@@ -22,7 +22,8 @@ class ArticlesServiceProvider extends ServiceProvider
 		$this->registerConfig();
 		$this->registerTranslations();
 		$this->registerViews();
-		$this->registerComposers();
+		$this->registerComposers(); 
+		$this->registerListeners(); 
 	}
 
 	/**
@@ -106,6 +107,20 @@ class ArticlesServiceProvider extends ServiceProvider
 		    # onAfterRenderItem
 		    #
 	        event('articles.admin.onAfterRenderItem', $view);
+		});
+	}
+
+	/**
+	 * Register listeners.
+	 * 
+	 * @return void
+	 */
+	public function registerListeners()
+	{
+		\Event::listen('composing: articles::index', function($view) {
+			if (is_array($view->snippets)) {
+        		$view->getFactory()->startSection('content', '@parent' . implode("\n", $view->snippets));
+        	}
 		});
 	}
 

@@ -8,6 +8,7 @@ class ArticlesController extends BaseController
 {
     protected $route_prefix = 'articles';
     protected $view_prefix = 'articles';
+    protected $theme = '';
 
     protected $repository;
 
@@ -24,8 +25,7 @@ class ArticlesController extends BaseController
     public function show($slug)
     {
         $article = $this->repository->findBy('slug', $slug)->first();
-
-        $view = $this->view('index', compact('article'));
+        $view = $this->view('index', compact('article', 'base_layout'));
 
         # 
         # onAfterRenderItem

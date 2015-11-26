@@ -1,18 +1,16 @@
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">
-            {{ $header or 'Article Form' }}
-        </h1>
-        <ol class="breadcrumb">
-            <li class="active">
-                <i class="fa fa-dashboard"></i> <a href="{{ route('admin.dashboard') }}">{{ trans('admin.dashboard.header') }}</a>
-            </li>
-            <li class="active">
-                {{ trans('articles::articles.admin.header') }}
-            </li>
-        </ol>
-    </div>
-</div>
+@section('content-header')
+    <h1 class="page-header">
+        {{ $header or 'Article Form' }}
+    </h1>
+    <ol class="breadcrumb">
+        <li class="active">
+            <i class="fa fa-dashboard"></i> <a href="{{ route('admin.dashboard') }}">{{ trans('admin.dashboard.header') }}</a>
+        </li>
+        <li class="active">
+            {{ trans('articles::articles.admin.header') }}
+        </li>
+    </ol>
+@stop
 
 <div class="row">
     <div class="col-lg-6">

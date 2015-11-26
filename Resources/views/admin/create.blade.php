@@ -1,4 +1,4 @@
-@extends('admin::layouts.master')
+@extends($cplayout)
 @section('title'){{ trans('articles::articles.admin.form.create.header') }}@stop
 
 @section('content')

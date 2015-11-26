@@ -12,6 +12,7 @@ class AdminController extends BaseController
 {
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
+    protected $theme = '';
 
     /**
      * @var Modules\Articles\Entities\Article

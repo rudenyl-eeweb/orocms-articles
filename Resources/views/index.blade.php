@@ -1,4 +1,4 @@
-@extends('base_layout')
+@extends($default_theme . '.base_layout')
 
 @if (isset($article))
     @section('title'){{ $article->title }}@stop

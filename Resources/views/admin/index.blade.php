@@ -1,4 +1,4 @@
-@extends('admin::layouts.master')
+@extends($cplayout)
 @section('title'){{ trans('articles::articles.admin.header') }}@stop
 
 @section('content-header')
@@ -17,54 +17,53 @@
 
 @section('content')
     <div id="list-container">
-            <div id="toolbar" class="btn-group">
-                <a role="button" href="{!! route('admin.modules.articles.create') !!}" class="btn btn-default">
-                    <i class="glyphicon glyphicon-file" aria-hidden="true"></i>
-                    <div class="hidden-xs inline-block">{{ trans('articles::articles.admin.list.button.create') }}</div>
-                </a>
-                <button type="button" class="btn btn-default can-toggle remove" title="{{ trans('articles::articles.admin.list.button.delete_all') }}" 
-                    data-url="{!! route('admin.modules.articles.destroy', csrf_token()) !!}" 
-                    data-method="DELETE"
-                    disabled>
-                    <i class="fa fa-trash-o"></i>
-                </button>
-            </div>
-
-            <table id="table-articles"
-                    class="table table-no-bordered break-word"
-                    data-toggle="table"
-                    data-show-columns="true"
-                    data-search="true"
-                    data-url="{!! route('admin.modules.articles.index') !!}"
-                    data-pagination="true"
-                    data-mobile-responsive="true"
-                    data-check-on-init="true"
-                    data-striped="true"
-                    data-side-pagination="server"
-                    data-page-list="[10, 20, 50, 100, ALL]"
-                    data-toolbar="#toolbar">
-                <thead>
-                <tr>
-                    <th data-field="state" data-checkbox="true" data-formatter="BT.formatter.state"></th>
-                    <th data-field="title" data-sortable="true" data-switchable="false" data-uri="/admin/modules/articles/{id}/edit" data-formatter="BT.formatter.linkable">
-                        {{ trans('articles::articles.admin.list.header.title') }}
-                    </th>
-                    <th data-field="created_at" data-width="180" data-sortable="true">
-                        {{ trans('articles::articles.admin.list.header.date_added') }}
-                    </th>
-                    <th data-field="updated_at" data-width="180" data-sortable="true">
-                        {{ trans('articles::articles.admin.list.header.date_modified') }}
-                    </th>
-                    <th data-field="published" data-sortable="true" data-align="center" data-width="120" data-formatter="BT.formatter.get_status">
-                        {{ trans('articles::articles.admin.list.header.published') }}
-                    </th>
-                    <th data-field="id" data-align="center" data-visible="false" data-width="80" data-sortable="true">
-                        {{ trans('articles::articles.admin.list.header.id') }}
-                    </th>
-                </tr>
-                </thead>
-            </table>
+        <div id="toolbar" class="btn-group">
+            <a role="button" href="{!! route('admin.modules.articles.create') !!}" class="btn btn-default">
+                <i class="glyphicon glyphicon-file" aria-hidden="true"></i>
+                <div class="hidden-xs inline-block">{{ trans('articles::articles.admin.list.button.create') }}</div>
+            </a>
+            <button type="button" class="btn btn-default can-toggle remove" title="{{ trans('articles::articles.admin.list.button.delete_all') }}" 
+                data-url="{!! route('admin.modules.articles.destroy', csrf_token()) !!}" 
+                data-method="DELETE"
+                disabled>
+                <i class="fa fa-trash-o"></i>
+            </button>
         </div>
+
+        <table id="table-articles"
+                class="table table-no-bordered break-word"
+                data-toggle="table"
+                data-show-columns="true"
+                data-search="true"
+                data-url="{!! route('admin.modules.articles.index') !!}"
+                data-pagination="true"
+                data-mobile-responsive="true"
+                data-check-on-init="true"
+                data-striped="true"
+                data-side-pagination="server"
+                data-page-list="[10, 20, 50, 100, ALL]"
+                data-toolbar="#toolbar">
+            <thead>
+            <tr>
+                <th data-field="state" data-checkbox="true" data-formatter="BT.formatter.state"></th>
+                <th data-field="title" data-sortable="true" data-switchable="false" data-uri="/admin/modules/articles/{id}/edit" data-formatter="BT.formatter.linkable">
+                    {{ trans('articles::articles.admin.list.header.title') }}
+                </th>
+                <th data-field="created_at" data-width="180" data-sortable="true">
+                    {{ trans('articles::articles.admin.list.header.date_added') }}
+                </th>
+                <th data-field="updated_at" data-width="180" data-sortable="true">
+                    {{ trans('articles::articles.admin.list.header.date_modified') }}
+                </th>
+                <th data-field="published" data-sortable="true" data-align="center" data-width="120" data-formatter="BT.formatter.get_status">
+                    {{ trans('articles::articles.admin.list.header.published') }}
+                </th>
+                <th data-field="id" data-align="center" data-visible="false" data-width="80" data-sortable="true">
+                    {{ trans('articles::articles.admin.list.header.id') }}
+                </th>
+            </tr>
+            </thead>
+        </table>
     </div>
 @stop
 
