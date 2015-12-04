@@ -13,7 +13,7 @@
 @stop
 
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         @if(isset($model))
         {!! Form::model($model, [
             'class' => 'form-default', 
@@ -40,6 +40,14 @@
                 {!! Form::text('slug', null, ['class' => 'form-control']) !!}
                 {!! $errors->first('slug', '<div class="text-danger">:message</div>') !!}
             </div>
+            @if(isset($model))
+            <div class="form-group">
+                <span>
+                    {{ trans('articles::articles.admin.form.label.permalink') }}: <a href="{{ route('articles.show', $model->slug) }}" target="_blank">{{ route('articles.show', $model->slug) }}</a>
+                </span>
+            </div>
+            @endif
+
             <div class="form-group">
                 {!! Form::label('description', trans('articles::articles.admin.form.label.description')) !!}
                 {!! Form::textarea('description', null, ['class' => 'form-control']) !!}

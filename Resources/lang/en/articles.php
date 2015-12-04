@@ -26,6 +26,7 @@ return [
 
     'admin.form.label.title' => 'Title',
     'admin.form.label.slug' => 'Slug',
+    'admin.form.label.permalink' => 'Permalink',
     'admin.form.label.summary' => 'Summary',
     'admin.form.label.description' => 'Description',
     'admin.form.label.is_featured' => 'Featured',
