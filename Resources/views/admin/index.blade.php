@@ -45,7 +45,7 @@
                 data-toolbar="#toolbar">
             <thead>
             <tr>
-                <th data-field="state" data-checkbox="true" data-formatter="BT.formatter.state"></th>
+                <th data-field="state" data-checkbox="true"></th>
                 <th data-field="title" data-sortable="true" data-switchable="false" data-uri="/admin/modules/articles/{id}/edit" data-formatter="BT.formatter.linkable">
                     {{ trans('articles::articles.admin.list.header.title') }}
                 </th>

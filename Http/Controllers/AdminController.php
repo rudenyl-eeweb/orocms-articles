@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Modules\Articles\Http\Controllers;
 
 use OroCMS\Admin\Controllers\BaseController;
@@ -8,7 +8,7 @@ use Modules\Articles\Validation\Update;
 use Modules\Articles\Events\ArticleEventHandler;
 use Illuminate\Http\Request;
 
-class AdminController extends BaseController 
+class AdminController extends BaseController
 {
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
@@ -16,13 +16,13 @@ class AdminController extends BaseController
 
     /**
      * @var Modules\Articles\Entities\Article
-     */ 
+     */
     protected $articles;
 
     /**
      * @param Modules\Articles\Repositories\ArticleRepository $repository
      */
-    function __construct(ArticleRepository $repository) 
+    function __construct(ArticleRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -37,7 +37,7 @@ class AdminController extends BaseController
 
         return $this->view('admin.index');
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -47,7 +47,7 @@ class AdminController extends BaseController
     {
         return $this->view('admin.create');
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -56,6 +56,8 @@ class AdminController extends BaseController
     public function store(Create $request)
     {
         $data = $request->all();
+        $data['slug'] = $this->repository->getModel()->toSlug($data['slug']);
+
         $article = $this->repository->create($data);
 
         return $this->redirect('articles.index')
@@ -75,7 +77,7 @@ class AdminController extends BaseController
             $article = $this->repository->findById($id);
 
             return $this->view('admin.edit', compact('article'));
-        } 
+        }
         catch (ModelNotFoundException $e) {
             return $this->view('admin.index');
         }
@@ -110,11 +112,13 @@ class AdminController extends BaseController
             }
 
             $data = $request->all();
+            $data['slug'] = $article->toSlug($data['slug']);
+
             $article->update($data);
 
             return $this->redirect('articles.index')
                 ->withFlashMessage( trans('articles::articles.admin.message.update.success') )->withFlashType('info');
-        } 
+        }
         catch (ModelNotFoundException $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -160,7 +164,7 @@ class AdminController extends BaseController
             }
 
             return $this->redirect('admin.index');
-        } 
+        }
         catch (ModelNotFoundException $e) {
             if ($request->ajax()) {
                 return response()->json([
