@@ -1,7 +1,6 @@
 <?php
 namespace Modules\Articles\Entities;
 
-use OroCMS\Admin\Traits\SlugTrait;
 use Modules\Articles\Entities\Tag;
 use Modules\Articles\Entities\Topic;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Article extends Model
 {
-    use SoftDeletes, SlugTrait;
+    use SoftDeletes;
 
     /**
      * Guarded attributes.
