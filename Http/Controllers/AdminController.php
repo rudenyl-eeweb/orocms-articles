@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Articles\Http\Controllers;
 
+use OroCMS\Admin\Traits\SlugTrait;
 use OroCMS\Admin\Controllers\BaseController;
 use Modules\Articles\Repositories\ArticleRepository;
 use Modules\Articles\Validation\Create;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 
 class AdminController extends BaseController
 {
+    use SlugTrait;
+
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
     protected $theme = '';
@@ -56,7 +59,7 @@ class AdminController extends BaseController
     public function store(Create $request)
     {
         $data = $request->all();
-        $data['slug'] = $this->repository->getModel()->toSlug($data['slug']);
+        $data['slug'] = $this->toSlug($data, 'title');
 
         $article = $this->repository->create($data);
 
@@ -112,7 +115,7 @@ class AdminController extends BaseController
             }
 
             $data = $request->all();
-            $data['slug'] = $article->toSlug($data['slug']);
+            $data['slug'] = $this->toSlug($data, 'title');
 
             $article->update($data);
 
