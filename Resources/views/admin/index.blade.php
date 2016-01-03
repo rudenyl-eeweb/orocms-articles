@@ -16,7 +16,7 @@
 @stop
 
 @section('content')
-    <div id="list-container">
+    <div class="list-container">
         <div id="toolbar" class="btn-group">
             <a role="button" href="{!! route('admin.modules.articles.create') !!}" class="btn btn-default">
                 <i class="glyphicon glyphicon-file" aria-hidden="true"></i>
@@ -70,6 +70,35 @@
 @push('jquery-scripts')
     // load bootstrap table
     BT.init('#table-articles', function(table) {
+        // add popover render callback
+        BT.field_callbacks.add('published', 'popover', function(row) {
+            var tmpl = '<span class="popup-view" data-pos="relative"><p style="color:red;">This item has been marked as deleted. To <strong>undelete</strong> this record, click the <strong>Restore</strong> button.</p><i>Deleted At:</i><b>{deleted_at}</b><button class="edit btn btn-sm btn-primary" role="ajax" data-url="/admin/modules/articles/{id}" data-params-restore="1" data-method="PUT">Restore</button>&nbsp;<button role="confirm" data-url="/admin/modules/articles/{id}" data-title="Force Delete" data-method="DELETE" data-message="This will be gone forever. Are you really sure you want to delete this account?" data-params-force_delete="1" class="btn btn-sm btn-default">Remove Permanently</button></a></span>';
+            // parse
+            for (var k in row) tmpl = tmpl.replace(new RegExp('{'+k+'}', 'g'), row[k]);
+            return tmpl;
+        });
+
+        // event listener
+        BT.target.on('click', '.popover button', function() {
+            var el = $(this);
+            $('.alert').remove(), $('.popover').popover('hide');
+
+            // events
+            el.on('railed.beforeSend', function(r,s) {
+                Preloader.create('.list-container', 'centered', false,true);
+            })
+            .on('railed.onComplete', function(e, result) {
+                Preloader.clear(function() {
+                    // check response
+                    var success = result.success || result.status,
+                        message = result.statusText || (result.message || 'No message returned.');
+
+                    BT.notify(message, '.bootstrap-table', success===true?'info':'warning', 'insertBefore', success===true);
+
+                    BT.target.bootstrapTable('refresh');
+                });
+            });     
+        });
     });
     $.extend(BT.formatter, {
         linkable: function(value, row) {
@@ -87,24 +116,22 @@
             // map value
             if (typeof $[k[1]] == 'function') v = $[k[1]](v);
 
-            return '<a class="link primary" href="' +uri.replace(s[0], v)+ '">' +value+ '</a>' +
-                '<a href="/articles/{slug}" target="_blank" class="redirect"><i class="glyphicon glyphicon-share-alt"></i></a>'
-                    .replace(/{slug}/, row.slug);
+            return '<a class="link primary" href="' +uri.replace(s[0], v)+ '">' +value+ '</a>';
         },
+        
         // format publishing
         get_status: function(value, row) {
             // soft deletes
             if (row.deleted_at) 
-                return '<a href="#" title="{{ trans('admin.defaults.list.status.deleted') }}" data-toggle="popover" data-trigger="click" ' +
-                    ' data-placement="left"><i class="fa fa-warning" style="color:red;"></a>';
-            var context = '<span class="label label-{type}">{title}</span>'
+                return '<a href="#" data-toggle="popover" data-trigger="click" data-placement="left"><span class="label label-danger" >'
+                    + '{{ trans('admin.defaults.list.status.deleted') }}' + '</span></a>';
+
+            return '<span class="label label-{type}">{title}</span>'
                 .replace(/{type}/, +value ? 'primary' : 'inactive')
                 .replace(/{title}/, +value ? 
                     '{{ trans('admin.defaults.list.status.published') }}' : 
                     '{{ trans('admin.defaults.list.status.unpublished') }}'
                 );
-            if (+row.access) context += ' <span class="label label-default">Private</span>';
-            return context;
-        }
+        },
     });
 @endpush

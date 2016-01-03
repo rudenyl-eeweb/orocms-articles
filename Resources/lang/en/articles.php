@@ -34,8 +34,14 @@ return [
     'admin.form.label.published' => 'Status',
 
     'admin.message.create.success' => 'Article successfully created.',
+    'admin.message.create.failed' => 'Unable to publish article.',
     'admin.message.update.success' => 'Article successfully updated.',
     'admin.message.delete.marked' => 'Article has been marked as deleted.',
     'admin.message.delete.success' => 'Article has been permanently deleted.',
+    'admin.message.delete.failed' => 'Unable to delete record/s.',
+    'admin.message.partial.delete.marked' => '[Warning: Not All!] Article has been marked as deleted.',
+    'admin.message.partial.delete.success' => '[Warning: Not All!] Article has been permanently deleted.',
     'admin.message.restored' => 'Article has been successfully restored',
+    'admin.message.restore.failed' => 'Unable to restore item',
+    'admin.error.unknown' => 'An unknown error has occured.',
 ];
