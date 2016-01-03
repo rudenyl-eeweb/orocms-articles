@@ -6,8 +6,11 @@
         <li class="active">
             <i class="fa fa-dashboard"></i> <a href="{{ route('admin.dashboard') }}">{{ trans('admin.dashboard.header') }}</a>
         </li>
+        <li>
+            <a href="{{ route('admin.modules.articles.index') }}">{{ trans('articles::articles.admin.header') }}</a>
+        </li>
         <li class="active">
-            {{ trans('articles::articles.admin.header') }}
+            {{ $header }}
         </li>
     </ol>
 @stop
@@ -59,7 +62,7 @@
             </div>
             <div class="form-group">
                 {!! Form::submit( trans('admin.user.form.button.' . (isset($model) ? 'update' : 'save')), [
-                    'class' => 'btn btn-primary form-button', 
+                    'class' => 'btn btn-rb-active form-button', 
                     'role' => 'form-button'
                 ]) !!}
                 <span class="lg hidden-xs">

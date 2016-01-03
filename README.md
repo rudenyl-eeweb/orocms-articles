@@ -1,2 +1,2 @@
 # orocms-articles
-Articles module for OroCMS
+Articles module for OroCMS integrating ACP.

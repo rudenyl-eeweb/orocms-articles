@@ -19,7 +19,6 @@ class ArticlesServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		$this->registerConfig();
 		$this->registerTranslations();
 		$this->registerViews();
 		$this->registerComposers(); 
@@ -33,7 +32,7 @@ class ArticlesServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		//
+		$this->registerConfig();
 	}
 
 	/**
@@ -43,12 +42,10 @@ class ArticlesServiceProvider extends ServiceProvider
 	 */
 	protected function registerConfig()
 	{
-		$this->publishes([
-		    __DIR__.'/../Config/config.php' => config_path('articles.php'),
-		]);
-		$this->mergeConfigFrom(
-		    __DIR__.'/../Config/config.php', 'articles'
-		);
+		$configPath = __DIR__.'/../Config/config.php';
+        if (file_exists($configPath)) {
+            $this->mergeConfigFrom($configPath, 'modules.configs.articles');
+        }
 	}
 
 	/**

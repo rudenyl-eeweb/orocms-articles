@@ -9,7 +9,7 @@
         </h1>
 
         <div role="md">
-            {{ $article->description }}
+            {!! $article->description !!}
         </div>
     @stop
 @endif

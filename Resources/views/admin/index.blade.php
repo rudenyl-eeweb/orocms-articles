@@ -87,7 +87,9 @@
             // map value
             if (typeof $[k[1]] == 'function') v = $[k[1]](v);
 
-            return '<a class="link primary" href="' +uri.replace(s[0], v)+ '">' +value+ '</a>';
+            return '<a class="link primary" href="' +uri.replace(s[0], v)+ '">' +value+ '</a>' +
+                '<a href="/articles/{slug}" target="_blank" class="redirect"><i class="glyphicon glyphicon-share-alt"></i></a>'
+                    .replace(/{slug}/, row.slug);
         },
         // format publishing
         get_status: function(value, row) {

@@ -1,5 +1,9 @@
 <?php
 
 return [
-	'name' => 'Articles'
+	'name' => 'Articles',
+    'route' => [
+        'prefix' => 'articles',
+        'cp' => 'admin/modules/articles'
+    ]
 ];
