@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Modules\Articles\Http\Controllers;
 
 use ACPClient\RESTClient;
@@ -8,7 +8,7 @@ use Modules\Articles\Validation\Update;
 use Modules\Articles\Events\ArticleEventHandler;
 use Illuminate\Http\Request;
 
-class AdminController extends BaseController 
+class AdminController extends BaseController
 {
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
@@ -22,7 +22,7 @@ class AdminController extends BaseController
     /**
      * @param ACPClient\RESTClient $repository
      */
-    function __construct(RESTClient $repository) 
+    function __construct(RESTClient $repository)
     {
         $this->repository = $repository;
 
@@ -30,7 +30,11 @@ class AdminController extends BaseController
         $this->repository->authenticate();
 
         // get token
+        if (!isset($this->repository->response->token)) {
+            $this->response_error();
+        }
         $this->auth_token = $this->repository->response->token ?: null;
+
         // set authorization header
         $this->repository->headers([
             'Authorization: Bearer ' . $this->auth_token
@@ -48,7 +52,7 @@ class AdminController extends BaseController
 
         return $this->view('admin.index');
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -58,7 +62,7 @@ class AdminController extends BaseController
     {
         return $this->view('admin.create');
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -93,7 +97,7 @@ class AdminController extends BaseController
             $article = (object)$this->repository->response->article ?: null;
 
             return $this->view('admin.edit', compact('article'));
-        } 
+        }
         catch (ModelNotFoundException $e) {
             return $this->view('admin.index');
         }
@@ -142,7 +146,7 @@ class AdminController extends BaseController
 
             return $this->redirect('articles.index')
                 ->withFlashMessage( trans('articles::articles.admin.message.update.success') )->withFlashType('info');
-        } 
+        }
         catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -209,7 +213,7 @@ class AdminController extends BaseController
             }
 
             return $this->redirect('admin.index');
-        } 
+        }
         catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -228,7 +232,8 @@ class AdminController extends BaseController
     private function response_error($default_message = '')
     {
         $response = isset($this->repository->response->error) ? $this->repository->response->error : null;
-        $message = @$response['message'] ?: $default_message;
+        $message = is_array($response) && isset($response['message']) ? $response['message'] : $response;
+        empty($message) and $message = $default_message;
 
         throw new \Exception($message);
     }
