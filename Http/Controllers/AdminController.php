@@ -1,8 +1,10 @@
 <?php
+
 namespace Modules\Articles\Http\Controllers;
 
 use ACPClient\RESTClient;
 use OroCMS\Admin\Controllers\BaseController;
+use Modules\Articles\Traits\RepositoryTrait;
 use Modules\Articles\Validation\Create;
 use Modules\Articles\Validation\Update;
 use Modules\Articles\Events\ArticleEventHandler;
@@ -10,6 +12,8 @@ use Illuminate\Http\Request;
 
 class AdminController extends BaseController
 {
+    use RepositoryTrait;
+
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
     protected $theme = '';
