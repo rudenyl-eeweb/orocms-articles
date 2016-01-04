@@ -1,11 +1,15 @@
-<?php 
+<?php
+
 namespace Modules\Articles\Http\Controllers;
 
 use ACPClient\RESTClient;
+use Modules\Articles\Traits\RepositoryTrait;
 use OroCMS\Admin\Controllers\BaseController;
 
-class ArticlesController extends BaseController 
+class ArticlesController extends BaseController
 {
+    use RepositoryTrait;
+
     protected $route_prefix = 'articles';
     protected $view_prefix = 'articles';
     protected $theme = '';
@@ -20,7 +24,7 @@ class ArticlesController extends BaseController
     /**
      * @param ACPClient\RESTClient $repository
      */
-    function __construct(RESTClient $repository) 
+    function __construct(RESTClient $repository)
     {
         $this->repository = $repository;
 
@@ -28,7 +32,11 @@ class ArticlesController extends BaseController
         $this->repository->authenticate();
 
         // get token
+        if (!isset($this->repository->response->token)) {
+            $this->response_error();
+        }
         $this->auth_token = $this->repository->response->token ?: null;
+
         // set authorization header
         $this->repository->headers([
             'Authorization: Bearer ' . $this->auth_token
@@ -48,15 +56,12 @@ class ArticlesController extends BaseController
             $article = (object)$this->repository->response->article ?: null;
         }
         catch(\Exception $e) {
-            $response = isset($this->repository->response->error) ? $this->repository->response->error : null;
-            $message = @$response['message'] ?: $e->getMessage();
-
-            throw new \Exception($message);
+            $this->response_error( $e->getMessage() );
         }
 
         $view = $this->view('index', compact('article', 'base_layout'));
 
-        # 
+        #
         # onAfterRenderItem
         #
         event('articles.onAfterRenderItem', $view);
