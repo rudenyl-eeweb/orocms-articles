@@ -47,7 +47,9 @@ class AdminController extends BaseController
 
     public function index(Request $request)
     {
-        $this->repository->get('/articles');
+        $this->repository->get('/articles', [
+            'parameters' => $request->only('sort', 'order', 'limit', 'offset')
+        ]);
         $articles = $this->repository->response ?: [];
 
         if ($request->isJson()) {
