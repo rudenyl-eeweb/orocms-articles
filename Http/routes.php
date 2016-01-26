@@ -3,7 +3,7 @@
  * Routes
  */
 
-Route::group(['namespace' => 'Modules\Articles\Http\Controllers', 'middleware' => ['web']], function() {
+Route::group(['namespace' => 'Modules\Articles\Http\Controllers', 'middleware' => 'web'], function() {
     Route::group(['prefix' => config('modules.configs.articles.route.prefix', 'articles')], function() {
         Route::get('/', ['as' => 'articles.index', 'uses' => 'ArticlesController@index']);
         Route::get('/{slug}', ['as' => 'articles.show', 'uses' => 'ArticlesController@show']);

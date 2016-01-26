@@ -32,10 +32,12 @@ class ArticlesController extends BaseController
         $this->repository->authenticate();
 
         // get token
-        if (!isset($this->repository->response->token)) {
-            abort(500, $this->repository->last_message);
+        if ($this->repository->connected()) {
+            $this->auth_token = $this->repository->response->token ?: null;
         }
-        $this->auth_token = $this->repository->response->token ?: null;
+        else {
+            \Log::error('REST API connect error: ' . ($this->repository->last_message ?: 'Unknown error has occured') );
+        }
 
         // set authorization header
         $this->repository->headers([
@@ -62,7 +64,7 @@ class ArticlesController extends BaseController
         $view = $this->view('index', compact('article', 'base_layout'));
 
         #
-        # onAfterRenderItem
+        # Fore onAfterRenderItem
         #
         event('articles.onAfterRenderItem', $view);
 

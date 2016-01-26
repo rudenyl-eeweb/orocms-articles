@@ -57,8 +57,12 @@
                 {!! $errors->first('description', '<div class="text-danger">:message</div>') !!}
             </div>
             <div class="form-group">
+                {!! Form::label('access', trans('articles::articles.admin.form.label.access')) !!}
+                {!! Form::select('access', [0 => 'Public', 1 => 'Private'], null, ['class' => 'form-control']) !!}
+            </div>
+            <div class="form-group">
                 {!! Form::label('published', trans('articles::articles.admin.form.label.published')) !!}
-                {!! Form::select('published', $statuses, null, ['class' => 'form-control']) !!}
+                {!! Form::select('published', [0 => 'Disabled', 1 => 'Enabled'], null, ['class' => 'form-control']) !!}
             </div>
             <div class="form-group">
                 {!! Form::submit( trans('admin.user.form.button.' . (isset($model) ? 'update' : 'save')), [
@@ -75,7 +79,11 @@
                     </a>
                 </span>
                 <a href="{!! route('admin.modules.articles.index') !!}" class="btn btn-default btn-block visible-xs ">
+                    @if(isset($model))
+                    {{ trans('articles::articles.admin.form.button.close') }}
+                    @else
                     {{ trans('articles::articles.admin.form.button.cancel') }}
+                    @endif
                 </a>
             </div>
 

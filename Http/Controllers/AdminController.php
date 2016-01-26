@@ -34,10 +34,12 @@ class AdminController extends BaseController
         $this->repository->authenticate();
 
         // get token
-        if (!isset($this->repository->response->token)) {
-            abort(500, $this->repository->last_message);
+        if ($this->repository->connected()) {
+            $this->auth_token = $this->repository->response->token ?: null;
         }
-        $this->auth_token = $this->repository->response->token ?: null;
+        else {
+            \Log::error('REST API connect error: ' . ($this->repository->get_last_error() ?: 'Unknown error has occured') );
+        }
 
         // set authorization header
         $this->repository->headers([
@@ -80,9 +82,12 @@ class AdminController extends BaseController
             'parameters' => $request->all()
         ]);
 
-        $success = $this->repository->response->created ?: false;
-        if (!$success) {
-            $this->response_error( trans('articles::articles.admin.message.create.failed') );
+        if ($error = $this->repository->get_last_error()) {
+            \Log::error($error);
+
+            return redirect()->back()
+                ->withInput()
+                ->withFlashMessage( trans('articles::articles.admin.message.create.failed')  )->withFlashType('warning');
         }
 
         return $this->redirect('articles.index')

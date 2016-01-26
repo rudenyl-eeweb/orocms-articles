@@ -41,6 +41,7 @@
                 data-check-on-init="true"
                 data-striped="true"
                 data-side-pagination="server"
+                data-data-field="data"
                 data-page-list="[10, 20, 50, 100, ALL]"
                 data-toolbar="#toolbar">
             <thead>
