@@ -1,4 +1,4 @@
-@extends($cplayout)
+@extends('admin::layouts.master')
 @section('title'){{ trans('articles::articles.admin.header') }}@stop
 
 @section('content-header')
