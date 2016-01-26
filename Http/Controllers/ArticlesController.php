@@ -33,7 +33,7 @@ class ArticlesController extends BaseController
 
         // get token
         if (!isset($this->repository->response->token)) {
-            $this->response_error();
+            abort(500, $this->repository->last_message);
         }
         $this->auth_token = $this->repository->response->token ?: null;
 
