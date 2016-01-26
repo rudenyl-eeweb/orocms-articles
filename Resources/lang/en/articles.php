@@ -11,6 +11,7 @@ return [
     'admin.list.header.description' => 'Description',
     'admin.list.header.date_modified' => 'Modified',
     'admin.list.header.last_access' => 'Last Accessed',
+    'admin.list.header.access' => 'Access',
     'admin.list.header.published' => 'Status',
     'admin.list.header.is_featured' => 'Featured',
     'admin.list.header.id' => 'ID',
@@ -31,6 +32,7 @@ return [
     'admin.form.label.description' => 'Description',
     'admin.form.label.is_featured' => 'Featured',
     'admin.form.label.ordering' => 'Ordering',
+    'admin.form.label.access' => 'Access',
     'admin.form.label.published' => 'Status',
 
     'admin.message.create.success' => 'Article successfully created.',
