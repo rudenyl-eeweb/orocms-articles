@@ -4,15 +4,13 @@ namespace Modules\Articles\Http\Controllers;
 
 use ACPClient\RESTClient;
 use OroCMS\Admin\Controllers\BaseController;
-use Modules\Articles\Traits\RepositoryTrait;
-use Modules\Articles\Validation\Create;
-use Modules\Articles\Validation\Update;
+use Modules\Articles\Traits\ResponseRepositoryTrait;
 use Modules\Articles\Events\ArticleEventHandler;
 use Illuminate\Http\Request;
 
 class AdminController extends BaseController
 {
-    use RepositoryTrait;
+    use ResponseRepositoryTrait;
 
     protected $route_prefix = 'admin.modules';
     protected $view_prefix = 'articles';
@@ -76,18 +74,27 @@ class AdminController extends BaseController
      *
      * @return Response
      */
-    public function store(Create $request)
+    public function store(Request $request)
     {
         $this->repository->post('/articles', [
             'parameters' => $request->all()
         ]);
 
-        if ($error = $this->repository->get_last_error()) {
-            \Log::error($error);
+        if ($error_msg = $this->repository->get_last_error()) {
+            \Log::error($error_msg);
 
-            return redirect()->back()
-                ->withInput()
-                ->withFlashMessage( trans('articles::articles.admin.message.create.failed')  )->withFlashType('warning');
+            if (isset($this->error->code)) {
+                //
+                // Form request validation error (EXCEPTION_VALIDATION)
+                //
+                if ($this->error->code == 28) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors( json_decode($this->error->message) );
+                }
+            }
+
+            abort(501, $error_msg);
         }
 
         return $this->redirect('articles.index')
@@ -103,15 +110,19 @@ class AdminController extends BaseController
      */
     public function edit($id)
     {
-        try {
-            $this->repository->get('/articles/' . $id);
-            $article = (object)$this->repository->response->article ?: null;
+        $this->repository->get('/articles/' . $id);
 
-            return $this->view('admin.edit', compact('article'));
+        if ($error_msg = $this->repository->get_last_error()) {
+            \Log::error($error_msg);
+
+            $error_code = in_array($this->error->code, [404,500,501]) ? $this->error->code : 404;
+
+            abort($error_code, $error_msg);
         }
-        catch (ModelNotFoundException $e) {
-            return $this->view('admin.index');
-        }
+
+        $article = (object)$this->repository->response->article ?: null;
+
+        return $this->view('admin.edit', compact('article'));
     }
 
     /**
@@ -121,7 +132,7 @@ class AdminController extends BaseController
      *
      * @return Response
      */
-    public function update(Update $request, $id)
+    public function update(Request $request, $id)
     {
         try {
             if ($request->ajax()) {
@@ -136,9 +147,8 @@ class AdminController extends BaseController
                         ]
                     ]);
 
-                    $success = $this->repository->response->restored ?: false;
-                    if (!$success) {
-                        $this->response_error( trans('articles::articles.admin.message.restore.failed') );
+                    if ($error_msg = $this->repository->get_last_error()) {
+                        abort(501, $error_msg);
                     }
                 }
 
@@ -150,9 +160,19 @@ class AdminController extends BaseController
                 'parameters' => $request->all()
             ]);
 
-            $success = $this->repository->response->updated ?: false;
-            if (!$success) {
-                $this->response_error( trans('articles::articles.admin.error.unknown') );
+            if ($error_msg = $this->repository->get_last_error()) {
+                if (isset($this->error->code)) {
+                    //
+                    // Form request validation error (EXCEPTION_VALIDATION)
+                    //
+                    if ($this->error->code == 28) {
+                        return redirect()->back()
+                            ->withInput()
+                            ->withErrors( json_decode($this->error->message) );
+                    }
+                }
+
+                abort(501, $error_msg);
             }
 
             return $this->redirect('articles.index')
@@ -192,6 +212,8 @@ class AdminController extends BaseController
             $force_delete = $request->has('force_delete') and (int)$request->has('force_delete');
 
             $deleted = 0;
+            $errors = [];
+
             foreach ($cids as $id) {
                 $this->repository->delete('/articles/' . $id, [
                     'parameters' => [
@@ -199,15 +221,20 @@ class AdminController extends BaseController
                     ]
                 ]);
 
-                $tag = ($force_delete ? '' : 'marked_') . 'deleted';
-                $success = $this->repository->response->$tag ?: false;
-                if ($success) {
-                    $deleted++;
+                if ($error_msg = $this->repository->get_last_error()) {
+                    $errors[] = sprinf('(%d) %s', $id, $error_msg);
+                }
+                else {
+                    $tag = ($force_delete ? '' : 'marked_') . 'deleted';
+                    $success = $this->repository->response->$tag ?: false;
+                    if ($success) {
+                        $deleted++;
+                    }
                 }
             }
 
             if (empty($deleted)) {
-                throw new \Exception( trans('articles::articles.admin.message.delete.failed') );
+                throw new \Exception( implode("\n", $errors) );
             }
 
             $tag = $force_delete ? 'success' : 'marked';
@@ -215,37 +242,18 @@ class AdminController extends BaseController
             if ($deleted && $deleted < count($cids)) {
                 $message = trans('articles::articles.admin.message.partial.delete.' . $tag);
             }
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => $message
-                ]);
-            }
-
-            return $this->redirect('admin.index');
         }
         catch (\Exception $e) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ]);
-            }
-
-            return $this->redirect('admin.index');
+            $message = $e->getMessage();
         }
-    }
 
-    /**
-     * Throw an exception from response
-     */
-    private function response_error($default_message = '')
-    {
-        $response = isset($this->repository->response->error) ? $this->repository->response->error : null;
-        $message = is_array($response) && isset($response['message']) ? $response['message'] : $response;
-        empty($message) and $message = $default_message;
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
 
-        throw new \Exception($message);
+        return $this->redirect('admin.index');
     }
 }

@@ -3,12 +3,12 @@
 namespace Modules\Articles\Http\Controllers;
 
 use ACPClient\RESTClient;
-use Modules\Articles\Traits\RepositoryTrait;
+use Modules\Articles\Traits\ResponseRepositoryTrait;
 use OroCMS\Admin\Controllers\BaseController;
 
 class ArticlesController extends BaseController
 {
-    use RepositoryTrait;
+    use ResponseRepositoryTrait;
 
     protected $route_prefix = 'articles';
     protected $view_prefix = 'articles';
@@ -36,7 +36,7 @@ class ArticlesController extends BaseController
             $this->auth_token = $this->repository->response->token ?: null;
         }
         else {
-            \Log::error('REST API connect error: ' . ($this->repository->last_message ?: 'Unknown error has occured') );
+            \Log::error('REST API connect error: ' . ($this->repository->get_last_error() ?: 'Unknown error has occured') );
         }
 
         // set authorization header
@@ -54,14 +54,17 @@ class ArticlesController extends BaseController
     {
         $this->repository->get('/articles/' . $id);
 
-        try {
-            $article = (object)$this->repository->response->article ?: null;
-        }
-        catch(\Exception $e) {
-            $this->response_error( $e->getMessage() );
+        if ($error_msg = $this->repository->get_last_error()) {
+            \Log::error($error_msg);
+
+            $error_code = in_array($this->error->code, [404,500,501]) ? $this->error->code : 404;
+
+            abort($error_code, $error_msg);
         }
 
-        $view = $this->view('index', compact('article', 'base_layout'));
+        $article = (object)$this->repository->response->article ?: null;
+
+        $view = $this->view('index', compact('article'));
 
         #
         # Fore onAfterRenderItem
