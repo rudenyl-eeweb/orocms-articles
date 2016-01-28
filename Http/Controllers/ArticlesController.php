@@ -63,11 +63,14 @@ class ArticlesController extends BaseController
         }
 
         $article = (object)$this->repository->response->article ?: null;
+        if (!$article->published) {
+            abort(404);
+        }
 
         $view = $this->view('index', compact('article'));
 
         #
-        # Fore onAfterRenderItem
+        # onAfterRenderItem
         #
         event('articles.onAfterRenderItem', $view);
 

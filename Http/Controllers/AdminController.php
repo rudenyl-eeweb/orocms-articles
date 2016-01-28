@@ -43,6 +43,11 @@ class AdminController extends BaseController
         $this->repository->headers([
             'Authorization: Bearer ' . $this->auth_token
         ]);
+
+        // set options
+        $this->repository->options([
+            'with_trashed' => true
+        ]);
     }
 
     public function index(Request $request)
@@ -249,8 +254,8 @@ class AdminController extends BaseController
 
         if ($request->ajax()) {
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
+                'success' => !empty($deleted),
+                'message' => $message
             ]);
         }
 
